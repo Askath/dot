@@ -11,6 +11,8 @@ This function should only modify configuration layer settings."
    ;; or `spacemacs'. (default 'spacemacs)
    dotspacemacs-distribution 'spacemacs
 
+    dotspacemacs-elpa-timeout 70
+
    ;; Lazy installation of layers (i.e. layers are installed only when a file
    ;; with a supported type is opened). Possible values are `all', `unused'
    ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
@@ -32,7 +34,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -45,6 +47,9 @@ This function should only modify configuration layer settings."
                  typescript-backend 'tide
                  )
      ;; better-defaults
+     twitter
+     reddit
+     (java :variables java-backend 'meghanada)
      emacs-lisp
      git
      osx
@@ -52,7 +57,9 @@ This function should only modify configuration layer settings."
      lsp
      markdown
      multiple-cursors
-     org
+     (org :variables
+          org-enable-jira-support t
+          jiralib-url "https://tickets.optadata.com")
      (shell :variables
              shell-default-height 30
              shell-default-position 'bottom)
@@ -70,7 +77,10 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(catppuccin-theme
+   dotspacemacs-additional-packages '(
+                                     todoist
+                                      obsidian
+                                      catppuccin-theme
                                       autothemer
                                       )
 
@@ -578,6 +588,34 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+  (setq todoist-token "9aa55da0e872caa8a8d841c2ba2d6d652b636380")
+
+
+  (setq org-jira-custom-jqls
+        '(
+          (:jql "project IN (E3B) AND sprint = SP70_Team_B AND type = Story AND status != done AND resolution = Unresolved ORDER BY priority DESC, updated DESC"
+                :filename "storys"
+                :limit 10)
+          ))
+
+ (use-package obsidian
+  :ensure t
+  :demand t
+  :config
+  (obsidian-specify-path "~/Documents/Brain")
+  (global-obsidian-mode t)
+  :custom
+  ;; This directory will be used for `obsidian-capture' if set.
+  (obsidian-inbox-directory "Inbox")
+  :bind (:map obsidian-mode-map
+              ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
+              ("C-c C-o" . obsidian-follow-link-at-point)
+              ;; Jump to backlinks
+              ("C-c C-b" . obsidian-backlink-jump)
+              ;; If you prefer you can use `obsidian-insert-link'
+              ("C-c C-l" . obsidian-insert-wikilink)))
+
 )
 
 
@@ -594,7 +632,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(company-quickhelp launchctl osx-clipboard osx-dictionary osx-trash reveal-in-osx-finder angular-mode js-doc js2-refactor multiple-cursors json-mode json-navigator hierarchy json-reformat json-snatcher livid-mode nodejs-repl npm-mode prettier-js skewer-mode js2-mode simple-httpd tide typescript-mode web-beautify ac-ispell auto-complete auto-dictionary auto-yasnippet autothemer browse-at-remote catppuccin-theme esh-help eshell-prompt-extras eshell-z evil-org flycheck-pos-tip pos-tip flyspell-correct-helm flyspell-correct fuzzy gh-md git-gutter-fringe fringe-helper git-gutter git-link git-messenger git-modes git-timemachine gitignore-templates gnuplot helm-c-yasnippet helm-company company helm-git-grep helm-ls-git helm-lsp helm-org-rifle htmlize lsp-origami origami lsp-treemacs lsp-ui lsp-mode markdown-toc mmm-mode multi-term xref org-cliplink org-contrib org-download org-mime org-pomodoro alert log4e gntp org-present org-projectile org-category-capture org-rich-yank orgit-forge orgit forge yaml markdown-mode ghub closql emacsql-sqlite emacsql treepy shell-pop smeargle terminal-here treemacs-magit magit magit-section git-commit with-editor transient vterm xterm-color yasnippet-snippets yasnippet ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil toc-org term-cursor symon symbol-overlay string-inflection spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline-all-the-icons space-doc restart-emacs request rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer org-superstar open-junk-file nameless multi-line macrostep lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line)))
+   '(groovy-imports pcache groovy-mode lsp-java dap-mode lsp-docker bui maven-test-mode meghanada mvn reddigg promise twittering-mode ox-jira org-jira add-node-modules-path company-web web-completion-data counsel-css counsel swiper ivy emmet-mode helm-css-scss impatient-mode pug-mode sass-mode haml-mode scss-mode slim-mode tagedit web-mode todoist helm-mu mu4e-alert mu4e-maildirs-extension obsidian company-quickhelp launchctl osx-clipboard osx-dictionary osx-trash reveal-in-osx-finder angular-mode js-doc js2-refactor multiple-cursors json-mode json-navigator hierarchy json-reformat json-snatcher livid-mode nodejs-repl npm-mode prettier-js skewer-mode js2-mode simple-httpd tide typescript-mode web-beautify ac-ispell auto-complete auto-dictionary auto-yasnippet autothemer browse-at-remote catppuccin-theme esh-help eshell-prompt-extras eshell-z evil-org flycheck-pos-tip pos-tip flyspell-correct-helm flyspell-correct fuzzy gh-md git-gutter-fringe fringe-helper git-gutter git-link git-messenger git-modes git-timemachine gitignore-templates gnuplot helm-c-yasnippet helm-company company helm-git-grep helm-ls-git helm-lsp helm-org-rifle htmlize lsp-origami origami lsp-treemacs lsp-ui lsp-mode markdown-toc mmm-mode multi-term xref org-cliplink org-contrib org-download org-mime org-pomodoro alert log4e gntp org-present org-projectile org-category-capture org-rich-yank orgit-forge orgit forge yaml markdown-mode ghub closql emacsql-sqlite emacsql treepy shell-pop smeargle terminal-here treemacs-magit magit magit-section git-commit with-editor transient vterm xterm-color yasnippet-snippets yasnippet ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil toc-org term-cursor symon symbol-overlay string-inflection spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline-all-the-icons space-doc restart-emacs request rainbow-delimiters quickrun popwin pcre2el password-generator paradox overseer org-superstar open-junk-file nameless multi-line macrostep lorem-ipsum link-hint inspector info+ indent-guide hybrid-mode hungry-delete holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
