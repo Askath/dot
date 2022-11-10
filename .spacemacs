@@ -44,7 +44,7 @@ This function should only modify configuration layer settings."
      tide
      (typescript :variables
                  typescript-linter 'eslint
-                 typescript-backend 'tide
+                 typescript-backend 'lsp
                  )
      ;; better-defaults
      twitter
@@ -53,6 +53,7 @@ This function should only modify configuration layer settings."
      emacs-lisp
      git
      osx
+     tide
      helm
      lsp
      markdown
@@ -256,7 +257,7 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         catppuccin-macchiato
+                         catppuccin
                          spacemacs-dark
                          spacemacs-light)
 
@@ -267,7 +268,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(all-the-icons :separator wave :separator-scale 1.5)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -276,8 +277,8 @@ It should only modify the values of Spacemacs settings."
    ;; Default font or prioritized list of fonts. The `:size' can be specified as
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
-   dotspacemacs-default-font '("ComicCodeLigatures"
-                               :size 10.0
+   dotspacemacs-default-font '("Source Code Pro"
+                               :size 12.0
                                :weight normal
                                :width normal)
 
@@ -589,6 +590,8 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  (setq timeclock-mode-line-display t)
+
   (setq todoist-token "9aa55da0e872caa8a8d841c2ba2d6d652b636380")
 
 
@@ -597,13 +600,16 @@ before packages are loaded."
           (:jql "project IN (E3B) AND sprint = SP70_Team_B AND type = Story AND status != done AND resolution = Unresolved ORDER BY priority DESC, updated DESC"
                 :filename "storys"
                 :limit 10)
+            (:jql "project IN (E3B) AND sprint = '' AND (type = Story or type = Bug) AND status != done AND resolution = Unresolved ORDER BY priority DESC, updated DESC"
+                  :filename "backlog"
+                  :limit 30)
           ))
 
  (use-package obsidian
   :ensure t
   :demand t
   :config
-  (obsidian-specify-path "~/Documents/Brain")
+  (obsidian-specify-path "~/brain")
   (global-obsidian-mode t)
   :custom
   ;; This directory will be used for `obsidian-capture' if set.
@@ -615,7 +621,6 @@ before packages are loaded."
               ("C-c C-b" . obsidian-backlink-jump)
               ;; If you prefer you can use `obsidian-insert-link'
               ("C-c C-l" . obsidian-insert-wikilink)))
-
 )
 
 
